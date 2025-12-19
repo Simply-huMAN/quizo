@@ -1,0 +1,35 @@
+{
+  "model": "open-mistral-nemo",
+  "messages": [
+    {
+      "role": "user",
+      "content": ""
+    }
+  ],
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "BlogResponse",
+      "description": "Schema for blog response",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "author": { "type": "string" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "author_brief": { "type": "string" },
+          "conclusion": { "type": "string" }
+        },
+        "required": ["title", "content", "author", "tags", "author_brief", "conclusion"],
+        "additionalProperties": false
+      },
+      "strict": true
+    }
+  },
+  "temperature": 0.7,
+  "max_tokens": 512
+}
