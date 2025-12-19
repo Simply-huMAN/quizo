@@ -3,18 +3,19 @@ package com.quizo.app.controller;
 import com.quizo.app.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController("/chat")
+@RestController
+@RequestMapping("/chat")
 public class ChatController {
 
     @Autowired
     private ChatService chatService;
 
-    public ResponseEntity<Object> chatCompletion(String content) {
+    @PostMapping("/completion")
+    public ResponseEntity<Object> chatCompletion(@RequestParam("content") String content) {
         return ResponseEntity.of(Optional.ofNullable(chatService.chatCompletion(content)));
     }
 
