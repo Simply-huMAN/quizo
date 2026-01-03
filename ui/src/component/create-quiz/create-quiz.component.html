@@ -1,0 +1,7 @@
+<section class="quiz-container">
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Topic</mat-label>
+        <input matInput type="text" placeholder="Something like Geography of World" [(ngModel)]="topic"/>
+    </mat-form-field>
+    <button mat-raised-button color="primary" class="submit-button" (click)="handleSubmit()">Generate Quiz</button>
+</section>

@@ -1,0 +1,21 @@
+<section class="quiz-container">
+    <p>{{ quizData?.title }}</p>
+    
+    <div class="quiz-section">
+        @for (item of quizData?.questions; track $index) {
+            <mat-card class="question-section">
+                <mat-card-header>
+                    <mat-card-subtitle>{{ $index+1 }}. {{item.question}}</mat-card-subtitle>
+                </mat-card-header>
+    
+                <mat-card-content>
+                    <mat-radio-group aria-label="Select an option" class="radio-group">
+                        @for (option of item.options; track $index) {
+                            <mat-radio-button color="primary" [value]="option">{{option}}</mat-radio-button>
+                        }
+                    </mat-radio-group>
+                </mat-card-content>
+            </mat-card> 
+        }
+    </div>
+</section>
