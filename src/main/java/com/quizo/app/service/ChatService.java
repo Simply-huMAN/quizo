@@ -1,14 +1,19 @@
 package com.quizo.app.service;
 
+import com.quizo.app.dto.ChatRequestBody;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.IOException;
 
 import static com.quizo.app.util.Constants.MODELS;
+import com.quizo.app.util.ObjectMapper;
 
 @Service
 public class ChatService {
@@ -26,6 +31,19 @@ public class ChatService {
             .header("Authorization", "Bearer " + apiKey)
             .header("Content-Type", "application/json")
             .body(requestBody);
+
+        return httpClient.postForEntity(baseUrl + "/chat/completions", request, Object.class);
+    }
+
+    public Object createQuiz(ChatRequestBody requestBody) throws IOException {
+        JsonNode schemaJson = ObjectMapper.readClassPathResource("static/quiz_schema.json");
+        ((ObjectNode) schemaJson.get("messages").get(0)).put("content", requestBody.content());
+
+        RequestEntity<String> request = RequestEntity
+            .post(baseUrl + "/chat/completions")
+            .header("Authorization", "Bearer " + apiKey)
+            .header("Content-Type", "application/json")
+            .body(schemaJson.toString());
 
         return httpClient.postForEntity(baseUrl + "/chat/completions", request, Object.class);
     }
