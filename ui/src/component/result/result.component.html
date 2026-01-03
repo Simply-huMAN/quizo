@@ -1,0 +1,30 @@
+<section class="result-container">
+    <p>{{ quizData?.title }}</p>
+
+    <div class="result-section">
+        <p>Your Score: {{ score }} / {{ quizData?.questions?.length }}</p>
+    </div>
+    <button mat-raised-button color="accent" class="action-button" (click)="handleReviewAnswers()">Review Answers</button>
+    
+    @if(showResults) {
+        @for (item of quizData?.questions; track qIndex; let qIndex = $index) {
+            <mat-card class="result-section" [ngClass]="{'wrong-answer': showResults && userAnswers[qIndex] !== item.answer}">
+                <mat-card-header>
+                    <mat-card-subtitle>{{ qIndex+1 }}. {{item.question}}</mat-card-subtitle>
+                </mat-card-header>
+    
+                <mat-card-content>
+                    <mat-radio-group aria-label="Select an option" class="radio-group" [(ngModel)]="userAnswers[qIndex]">
+                        @for (option of item.options; track oIndex; let oIndex = $index) {
+                            <mat-radio-button color="primary" [value]="oIndex" [ngClass]="{'correct-answer': item.answer === oIndex }">{{option}}</mat-radio-button>
+                        }
+                    </mat-radio-group>
+                </mat-card-content>
+
+                <mat-card-footer class="question-section-footer">
+                    <p>{{item.explanation}}</p>
+                </mat-card-footer>
+            </mat-card> 
+        }
+    }
+</section>

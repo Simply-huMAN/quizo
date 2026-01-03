@@ -33,17 +33,20 @@ export class CreateQuizComponent {
   }
 
   handleSubmit() {
+    if(!this.topic().trim()) return;
     console.log('Generating quiz for topic:', this.topic());
 
     this.quizService.createQuiz(this.topic()).subscribe({
       next: (response) => {
         console.log('Quiz created successfully:', response);
-        console.log('Response Body Type:', typeof response);
         console.log(response);
-        
+
         const data = JSON.parse((response as QuizResponse).body.choices[0].message.content);
         localStorage.setItem('quizData', JSON.stringify(data));
         this.router.navigate(['/quiz']);
+      },
+      error: (error) => {
+        console.error('Error creating quiz:', error);
       }
     });
   }

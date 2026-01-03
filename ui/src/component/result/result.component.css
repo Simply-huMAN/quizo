@@ -1,10 +1,9 @@
-.quiz-container {
+.result-container {
     max-width: 80vw;
     margin: 0 auto;
 }
 
-.question-section {
-    /* background: rgb(121, 119, 119); */
+.result-section {
     border-radius: 0.2rem;
     padding: 0 0rem;
     margin: 0.5rem 0;
@@ -12,17 +11,16 @@
 
 .question-section-footer {
     box-sizing: border-box;
-    border-radius: 0.2rem;
+    border-radius: 0 0 0.2rem 0.2rem;
     padding: 0 1rem;
     background-color: #f0f0f0;
-}
-
-.question {
 
 }
 
-.wrong-answer {
-    background-color: rgba(255, 0, 0, 0.264);
+.correct-answer {
+    width: 100%;
+    background-color: rgba(0, 255, 0, 0.264);
+    border-radius: 0.2rem;
 }
 
 .radio-group {
