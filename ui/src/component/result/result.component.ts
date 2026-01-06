@@ -43,4 +43,8 @@ export class ResultComponent implements OnInit {
     localStorage.removeItem('quizData');
     localStorage.removeItem('userAnswers');
   }
+
+  handleSubmit() {
+    this.router.navigate(['/']);
+  }
 }

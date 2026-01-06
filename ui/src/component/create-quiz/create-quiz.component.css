@@ -1,12 +1,32 @@
 .quiz-container {
   display: flex;
   flex-direction: column;
-  max-width: 500px;
-  margin: 40px auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   padding: 20px;
 }
 
-.submit-btn {
-  height: 45px;
-  font-size: 16px;
+.quiz-container div {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 0.2rem;
+  /* box-shadow: 0 10px 40px rgba(0,0,0,0.1); */
+}
+
+.submit-button {
+  margin-top: -10px;
+}
+
+.hero-section {
+  text-align: center;
+}
+
+.hero-section > .title {
+  font-size: 1.25rem;
+}
+
+.hero-section > .subtitle {
+  font-size: 0.8rem;
 }
