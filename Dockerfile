@@ -1,41 +1,14 @@
-FROM ubuntu:latest
-LABEL authors="aditya"
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    openjdk-17-jdk \
-    maven \
-    nodejs \
-    npm \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
+# Build stage
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
 WORKDIR /app
-
-# Copy backend source
-COPY pom.xml ./
+COPY pom.xml .
+RUN mvn dependency:go-offline
 COPY src ./src
+RUN mvn clean install
 
-# Copy frontend source
-COPY angular-app ./angular-app
-
-# Build Spring Boot backend
-RUN mvn clean package -DskipTests
-
-# Build Angular frontend
-WORKDIR /app/angular-app
-RUN npm install && npm run build
-
+# Runtime stage
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
-
-# Expose ports for backend and frontend
-EXPOSE 8080 4200
-
-# Create entrypoint script to handle runtime secrets
-RUN echo '#!/bin/bash\n\
-java -Dllm.mistral.baseApiUrl=${LLM_MISTRAL_BASE_API_URL} \n\
-     -Dllm.mistral.apiKey=${LLM_MISTRAL_API_KEY} \n\
-     -jar target/backend-app.jar &\n\
-npm serve --prefix angular-app' > /entrypoint.sh && chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+COPY --from=builder /app/target/blog-*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
