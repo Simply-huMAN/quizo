@@ -14,7 +14,7 @@
                 </mat-card-header>
     
                 <mat-card-content>
-                    <mat-radio-group aria-label="Select an option" class="radio-group" [(ngModel)]="userAnswers[qIndex]">
+                    <mat-radio-group aria-label="Select an option" class="radio-group" disabled="true" [(ngModel)]="userAnswers[qIndex]">
                         @for (option of item.options; track oIndex; let oIndex = $index) {
                             <mat-radio-button color="primary" [value]="oIndex" [ngClass]="{'correct-answer': item.answer === oIndex }">{{option}}</mat-radio-button>
                         }
