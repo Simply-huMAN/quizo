@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class QuizService {
-  private apiUrl = 'http://localhost:8080/chat';
+  private apiUrl = '/chat';
 
   constructor(private http: HttpClient) { }
 
