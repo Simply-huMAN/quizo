@@ -37,7 +37,7 @@ public class ChatService {
 
     public Object createQuiz(ChatRequestBody requestBody) throws IOException {
         JsonNode schemaJson = ObjectMapper.readClassPathResource("static/quiz_schema.json");
-        ((ObjectNode) schemaJson.get("messages").get(0)).put("content", requestBody.content());
+        ((ObjectNode) schemaJson.get("messages").get(0)).put("content", requestBody.getContent());
 
         RequestEntity<String> request = RequestEntity
             .post(baseUrl + "/chat/completions")
