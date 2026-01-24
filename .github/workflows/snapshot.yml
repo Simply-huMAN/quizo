@@ -1,0 +1,148 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ working, feature/*]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  JAVA_VERSION: '21'
+  NODE_VERSION: '20.10.0'
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ui
+        run: npm ci
+
+      - name: Download backend dependencies
+        run: mvn -B dependency:go-offline
+
+  lint:
+    name: Lint (optional)
+    runs-on: ubuntu-latest
+    needs: setup
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Lint frontend
+        working-directory: ui
+        run: |
+          npm ci
+          npm run lint
+
+      - name: Notify on lint failure
+        if: failure()
+        run: echo "Lint failed — add email notification here"
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [setup, lint]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # ---------- Frontend ----------
+      - name: Build frontend
+        working-directory: ui
+        run: |
+          npm ci
+          npm run build -- --configuration production
+
+      # ---------- Backend ----------
+      - name: Build backend
+        run: mvn -B package -DskipTests
+
+      # ---------- Artifacts ----------
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend
+          path: target/*.jar
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend
+          path: ui/dist/
+
+  publish:
+    name: Publish Artifacts
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download backend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend
+          path: backend
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend
+          path: frontend
+
+      - name: Publish placeholder
+        run: |
+          echo "Artifacts published to GitHub Actions"
+          ls -R .
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: publish
+
+    steps:
+      - name: Verify Render hook exists
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            echo "Render deploy hook is missing!"
+            exit 1
+          fi
+
+      - name: Trigger Render deploy
+        run: |
+          curl -f -X POST "${{ vars.RENDER_DEPLOY_HOOK }}"
