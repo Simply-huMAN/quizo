@@ -181,6 +181,13 @@ jobs:
     needs: release
 
     steps:
+      - name: Verify Render hook exists
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            echo "Render deploy hook is missing!"
+            exit 1
+          fi
+
       - name: Trigger Render deploy
-      - run: |
-      - curl -X POST "${{ variables.RENDER_DEPLOY_HOOK }}"
+        run: |
+          curl -f -X POST "${{ vars.RENDER_DEPLOY_HOOK }}"
