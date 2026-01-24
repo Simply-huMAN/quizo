@@ -1,0 +1,19 @@
+<section class="quiz-container">
+    <div>
+        <div class="hero-section">
+            <p class="title">Give me any topic, text or concept - I'll generate a quiz in seconds.</p>
+            <p class="subtitle">Whether it's for learning, teaching, training, or fun - I create smart quizzes tailored to your input, instantly.</p>
+        </div>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Topic</mat-label>
+            <input matInput type="text" placeholder="Something like Quiz me on World War II" [(ngModel)]="topic"/>
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="submit-button full-width" (click)="handleSubmit()" id="submit-button">
+            @if(isLoading()) {
+                <mat-progress-spinner diameter="20" mode="indeterminate" color="accent" class="loading-spinner"></mat-progress-spinner>
+            } @else {
+            Generate Quiz
+            }
+        </button>
+    </div>
+</section>

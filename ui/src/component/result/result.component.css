@@ -1,0 +1,41 @@
+.result-container {
+    max-width: 80vw;
+    margin: 0 auto;
+}
+
+.result-section {
+    border-radius: 0.2rem;
+    padding: 0 0rem;
+    margin: 0.5rem 0;
+}
+
+.question-section-footer {
+    box-sizing: border-box;
+    border-radius: 0 0 0.2rem 0.2rem;
+    padding: 0 1rem;
+    background-color: #f0f0f0;
+
+}
+
+.correct-answer {
+    width: 100%;
+    background-color: rgba(0, 255, 0, 0.264);
+    border-radius: 0.2rem;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    align-items: flex-start;
+}
+
+.action-button {
+    margin: 0 0.5rem 0.5rem 0;
+}
+
+@media screen and (max-width: 600px) {
+    .result-container {
+        max-width: 95vw;
+    }
+}
