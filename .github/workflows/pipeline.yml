@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: ui/package-lock.json
 
       - name: Install frontend dependencies
-        working-directory: frontend
+        working-directory: ui
         run: npm ci
 
       - name: Download backend dependencies
@@ -60,7 +60,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Lint frontend
-        working-directory: frontend
+        working-directory: ui
         run: |
           npm ci
           npm run lint
@@ -91,7 +91,7 @@ jobs:
 
       # ---------- Frontend ----------
       - name: Build frontend
-        working-directory: frontend
+        working-directory: ui
         run: |
           npm ci
           npm run build -- --configuration production
@@ -136,6 +136,7 @@ jobs:
           echo "Artifacts published to GitHub Actions"
           ls -R .
 
+
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -172,6 +173,7 @@ jobs:
           files: |
             backend/*.jar
             frontend/**/*
+
 
   deploy:
     name: Deploy
