@@ -11,6 +11,9 @@ on:
         required: true
         default: '1.0.0'
 
+permissions:
+  contents: write
+
 env:
   JAVA_VERSION: '21'
   NODE_VERSION: '20.10.0'
@@ -137,6 +140,7 @@ jobs:
           ls -R .
 
 
+
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -157,6 +161,14 @@ jobs:
             exit 1
           fi
 
+      - name: Check for existing tag
+        id: check_tag
+        run: |
+          if git rev-parse "v${RELEASE_VERSION}" >/dev/null 2>&1; then
+            echo "ERROR: Tag v${RELEASE_VERSION} already exists. Aborting release."
+            exit 1
+          fi
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
 
@@ -173,7 +185,6 @@ jobs:
           files: |
             backend/*.jar
             frontend/**/*
-
 
   deploy:
     name: Deploy
