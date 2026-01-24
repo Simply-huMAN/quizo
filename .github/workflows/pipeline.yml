@@ -181,5 +181,6 @@ jobs:
     needs: release
 
     steps:
-      - name: Deploy placeholder
-        run: echo "Deploy step not implemented yet"
+      - name: Trigger Render deploy
+      - run: |
+      - curl -X POST "${{ variables.RENDER_DEPLOY_HOOK }}"
