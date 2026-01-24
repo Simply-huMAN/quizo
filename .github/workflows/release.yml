@@ -187,6 +187,13 @@ jobs:
           echo "Frontend files:"
           ls -R frontend
 
+      - name: List downloaded files
+        run: |
+          echo "Backend files:"
+          ls -R backend
+          echo "Frontend files:"
+          ls -R frontend
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
