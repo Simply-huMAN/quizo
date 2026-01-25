@@ -11,23 +11,23 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/chat")
-public class ChatController {
-
+public class QuizController {
     @Autowired
     private ChatService chatService;
 
     @PostMapping("/completion")
     public ResponseEntity<Object> chatCompletion(@RequestParam("content") String content) {
-        return ResponseEntity.of(Optional.ofNullable(chatService.chatCompletion(content)));
+        return ResponseEntity.of(Optional.ofNullable(chatService.chat(content)));
     }
 
     @PostMapping("/create-quiz")
     public ResponseEntity<Object> createQuiz(@RequestBody ChatRequestBody requestBody) throws IOException {
-        return ResponseEntity.of(Optional.ofNullable(chatService.createQuiz(requestBody)));
+        return ResponseEntity.of(Optional.ofNullable(chatService.createQuiz(requestBody.getContent())));
     }
 
     @GetMapping("/models")
     public ResponseEntity<Object> getModels() {
         return ResponseEntity.ok(chatService.getModels());
     }
+
 }

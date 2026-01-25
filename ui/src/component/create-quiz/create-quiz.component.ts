@@ -44,7 +44,7 @@ export class CreateQuizComponent {
         console.log('Quiz created successfully:', response);
         console.log(response);
 
-        const data = JSON.parse((response as QuizResponse).body.choices[0].message.content);
+        const data = response as QuizResponse;
         localStorage.setItem('quizData', JSON.stringify(data));
         this.router.navigate(['/quiz']);
         this.isLoading.set(false);
