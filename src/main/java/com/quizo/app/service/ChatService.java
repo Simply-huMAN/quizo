@@ -1,59 +1,54 @@
 package com.quizo.app.service;
 
-import com.quizo.app.dto.ChatRequestBody;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.mistralai.MistralAiChatOptions;
+import org.springframework.ai.mistralai.api.MistralAiApi;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
-
-import static com.quizo.app.util.Constants.MODELS;
-import com.quizo.app.util.ObjectMapper;
+import java.io.InputStream;
+import java.util.Map;
 
 @Service
 public class ChatService {
-    @Value("${llm.mistral.baseApiUrl}")
-    private String baseUrl;
-    @Value("${llm.mistral.apiKey}")
-    private String apiKey;
+    private ChatModel chatModel;
 
-    private RestTemplate httpClient = new RestTemplate();
-
-    public Object chatCompletion(String content) {
-        String requestBody = "{\"model\": \"open-mistral-nemo\",\"temperature\": 1.5,\"stream\": false,\"messages\": [{\"role\": \"user\",\"content\": \"" + content + "\"}],\"response_format\": {\"type\": \"text\"}}";
-        RequestEntity<String> request = RequestEntity
-            .post(baseUrl + "/chat/completions")
-            .header("Authorization", "Bearer " + apiKey)
-            .header("Content-Type", "application/json")
-            .body(requestBody);
-
-        return httpClient.postForEntity(baseUrl + "/chat/completions", request, Object.class);
+    public ChatService(ChatModel chatModel) {
+        this.chatModel = chatModel;
     }
 
-    public Object createQuiz(ChatRequestBody requestBody) throws IOException {
-        JsonNode schemaJson = ObjectMapper.readClassPathResource("static/quiz_schema.json");
-        ((ObjectNode) schemaJson.get("messages").get(0)).put("content", requestBody.getContent());
-
-        RequestEntity<String> request = RequestEntity
-            .post(baseUrl + "/chat/completions")
-            .header("Authorization", "Bearer " + apiKey)
-            .header("Content-Type", "application/json")
-            .body(schemaJson.toString());
-
-        return httpClient.postForEntity(baseUrl + "/chat/completions", request, Object.class);
+    public String chat(String prompt) {
+        return chatModel.call(prompt);
     }
 
-    public Object getModels() {
-        RequestEntity<Void> request = RequestEntity
-            .get(baseUrl + MODELS)
-            .header("Authorization", "Bearer " + apiKey)
-            .build();
+    public Object createQuiz(String topic) throws IOException {
+        ChatResponse response = chatModel.call(
+                new Prompt(topic,
+                        MistralAiChatOptions.builder()
+                                    .responseFormat(
+                                    new MistralAiApi.ChatCompletionRequest.ResponseFormat("json_schema",
+                                            loadQuizSchema()))
+                                .build())
+        );
 
-        return httpClient.exchange(baseUrl + MODELS, HttpMethod.GET, request, Object.class);
+        // return response;
+        return response.getResult().getOutput().getText();
+    }
+
+    public String getModels() {
+        return "";
+    }
+
+    private Map<String, Object> loadQuizSchema() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        try (InputStream is = new ClassPathResource("static/QuizSchema.json").getInputStream()) {
+            return mapper.readValue(is, new TypeReference<>() {
+            });
+        }
     }
 }
