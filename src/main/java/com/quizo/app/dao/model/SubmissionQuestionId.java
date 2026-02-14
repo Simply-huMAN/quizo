@@ -16,8 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SubmissionQuestionId implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     private UUID submissionId;
     private UUID questionId;
 }

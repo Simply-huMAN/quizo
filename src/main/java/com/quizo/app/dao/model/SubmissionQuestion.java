@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
+import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,6 +15,7 @@ import java.util.UUID;
 @Entity
 @Table
 @IdClass(SubmissionQuestionId.class)
+@Data
 public class SubmissionQuestion {
 
     @Id
@@ -22,8 +26,9 @@ public class SubmissionQuestion {
     @Schema(description = "Question to which the submission question belongs")
     private UUID questionId;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Schema(description = "Options selected by the user for the question")
-    private List<String> OptionId;
+    private List<String> selectedOptionId;
 
     @Schema(description = "Indicate whether the answer for the question is correct")
     private Boolean isCorrect;

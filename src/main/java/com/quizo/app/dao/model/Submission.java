@@ -1,27 +1,26 @@
 package com.quizo.app.dao.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table
+@Data
 public class Submission {
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID submissionId;
 
     @Schema(description = "Form to which the submission belongs")
     private UUID formId;
 
     @Schema(description = "Score obtained for the submission")
-    private Integer score;
+    private Integer totalScore;
 
     @Schema(description = "Remarks for the submission")
     private String remarks;
@@ -30,7 +29,7 @@ public class Submission {
     private UUID userId;
 
     @Schema(description = "Instant when the submission is started")
-    private Instant startedAt;
+    private Instant startedAt = Instant.now();
 
     /**
      *  Auto submit if the submission is not submitted within the duration of the form
