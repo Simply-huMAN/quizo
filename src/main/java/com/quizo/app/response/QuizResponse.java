@@ -1,4 +1,6 @@
-package com.quizo.app.dto;
+package com.quizo.app.response;
+
+import com.quizo.app.dto.Question;
 
 import java.util.List;
 
