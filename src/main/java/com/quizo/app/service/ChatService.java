@@ -2,6 +2,8 @@ package com.quizo.app.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.quizo.app.dto.FormDTO;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -16,14 +18,21 @@ import java.util.Map;
 
 @Service
 public class ChatService {
-    private ChatModel chatModel;
+    private final ChatModel chatModel;
+    private final ChatClient chatClient;
 
     public ChatService(ChatModel chatModel) {
         this.chatModel = chatModel;
+        this.chatClient = ChatClient.builder(chatModel).build();
     }
 
     public String chat(String prompt) {
         return chatModel.call(prompt);
+    }
+
+    public Object createForm(String topic) {
+        FormDTO response = chatClient.prompt().user(topic).call().entity(FormDTO.class);
+        return response;
     }
 
     public Object createQuiz(String topic) throws IOException {

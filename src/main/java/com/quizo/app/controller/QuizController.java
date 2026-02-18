@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/chat")
+@CrossOrigin(origins = "*")
 public class QuizController {
     @Autowired
     private ChatService chatService;
@@ -23,6 +24,11 @@ public class QuizController {
     @PostMapping("/create-quiz")
     public ResponseEntity<Object> createQuiz(@RequestBody ChatRequestBody requestBody) throws IOException {
         return ResponseEntity.of(Optional.ofNullable(chatService.createQuiz(requestBody.getContent())));
+    }
+
+    @PostMapping("/create-form")
+    public ResponseEntity<Object> createForm(@RequestBody ChatRequestBody requestBody) throws IOException {
+        return ResponseEntity.of(Optional.ofNullable(chatService.createForm(requestBody.getContent())));
     }
 
     @GetMapping("/models")

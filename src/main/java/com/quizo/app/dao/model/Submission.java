@@ -28,18 +28,19 @@ public class Submission {
     @Schema(description = "User who made the submission")
     private UUID userId;
 
+    //TASK: Handle zombie submission i.e. user has started but not submitted the form i.e. closed the form without submitting
     @Schema(description = "Instant when the submission is started")
-    private Instant startedAt = Instant.now();
+    private Instant startedAt;
 
     /**
      *  Auto submit if the submission is not submitted within the duration of the form
      *  Auto submit if user has started but not submitted the form i.e. closed the form without submitting
      */
     @Schema(description = "Instant when the submission is submitted")
-    private Instant submittedAt;
+    private Instant submittedAt = Instant.now();
 
     @Schema(description = "Status of the score evaluation")
-    private Enum<Status> evaluationStatus;
+    private Enum<Status> evaluationStatus = Status.PENDING;
 
     @Schema(description = "Instant when the score is evaluated")
     private Instant scoreEvaluatedAt;

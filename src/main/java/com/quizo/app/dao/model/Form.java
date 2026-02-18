@@ -2,8 +2,7 @@ package com.quizo.app.dao.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,6 +11,8 @@ import java.util.UUID;
 @Table
 @Data
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Form {
 
     @Id

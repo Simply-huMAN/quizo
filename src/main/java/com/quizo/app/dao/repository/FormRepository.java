@@ -12,4 +12,6 @@ public interface FormRepository extends JpaRepository<Form, UUID> {
 
     @Query("SELECT f FROM Form f WHERE f.id = :id")
     int saveForm(Form form);
+
+    Form getById(UUID id);
 }

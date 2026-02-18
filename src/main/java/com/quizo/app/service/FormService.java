@@ -1,39 +1,34 @@
 package com.quizo.app.service;
 
-import com.quizo.app.dao.model.Form;
+import com.quizo.app.dao.model.*;
 import com.quizo.app.dao.model.Question;
-import com.quizo.app.dao.model.Solution;
-import com.quizo.app.dao.repository.FormRepository;
-import com.quizo.app.dao.repository.QuestionRepository;
-import com.quizo.app.dao.repository.SolutionRepository;
-import com.quizo.app.dao.repository.SubmissionRepository;
-import com.quizo.app.dto.FormDTO;
+import com.quizo.app.dao.repository.*;
+import com.quizo.app.dto.*;
 import com.quizo.app.utils.FormMapper;
 import com.quizo.app.utils.QuestionMapper;
+import com.quizo.app.utils.SubmissionMapper;
+import com.quizo.app.utils.SubmissionQuestionMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
+@AllArgsConstructor
 public class FormService {
     private FormMapper formMapper;
     private FormRepository formRepository;
     private QuestionMapper questionMapper;
     private QuestionRepository questionRepository;
     private SolutionRepository solutionRepository;
+    private SubmissionMapper submissionMapper;
+    private SubmissionQuestionRepository submissionQuestionRepository;
+    private SubmissionQuestionMapper submissionQuestionMapper;
     private SubmissionRepository submissionRepository;
 
-    public FormService(FormMapper formMapper, FormRepository formRepository, QuestionMapper questionMapper, QuestionRepository questionRepository, SolutionRepository solutionRepository, SubmissionRepository submissionRepository) {
-        this.formMapper = formMapper;
-        this.formRepository = formRepository;
-        this.questionMapper = questionMapper;
-        this.questionRepository = questionRepository;
-        this.solutionRepository = solutionRepository;
-        this.submissionRepository = submissionRepository;
-    }
-
-    public void createForm(FormDTO formDto) {
+    public UUID createForm(FormDTO formDto) {
         // Save form in FORM Table
         Form form = formMapper.toEntity(formDto);
         var formResponse = formRepository.save(form);
@@ -54,6 +49,37 @@ public class FormService {
             solutionRepository.save(solution);
         });
         // questionRepository.saveAll(questionsList);
+        return formResponse.getFormId();
+    }
+
+    public FormResponseDTO getFormById(UUID id, boolean includeQuestions) {
+        if(includeQuestions) {
+            Form form = formRepository.getById(id);
+            var questions = questionRepository.findAllByFormId(id);
+            List<QuestionResponseDTO> questionDTOS = questionMapper.toResponseDtoList(questions);
+            FormResponseDTO formDTO = formMapper.toResponseDto(form);
+            formDTO.setQuestions(questionDTOS);
+            return formDTO;
+        }
+        Form form = formRepository.getById(id);
+        return formMapper.toResponseDto(form);
+    }
+
+    public String submitForm(SubmissionDTO submissionDTO) {
+        // Save submission in SUBMISSION Table
+        Submission submission = submissionMapper.toEntity(submissionDTO);
+        var submissionResponse = submissionRepository.save(submission);
+
+        // Save submission questions in SUBMISSION_QUESTION Table
+        List<SubmissionQuestionDTO> submissionQuestionDTOS = submissionDTO.getAnswers();
+        submissionQuestionDTOS.stream().forEach(submissionQuestionDTO -> {
+            UUID submissionId = submissionResponse.getSubmissionId();
+            submissionQuestionDTO.setSubmissionId(submissionId);
+
+            SubmissionQuestion submissionQuestion = submissionQuestionMapper.toEntity(submissionQuestionDTO);
+            submissionQuestionRepository.save(submissionQuestion);
+        });
+        return "Form submitted successfully, Submission ID: " + submissionResponse.getSubmissionId();
     }
 
 }

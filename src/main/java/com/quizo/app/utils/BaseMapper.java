@@ -5,10 +5,12 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-public interface BaseMapper<Dto, Entity> {
-    Dto toDto(Entity entity);
-    Entity toEntity(Dto dto);
-    List<Dto> toDtoList(List<Entity> entityList);
-    List<Entity> toEntityList(List<Dto> dtoList);
-    void updateEntityFromDto(Dto dto, @MappingTarget Entity entity);
+public interface BaseMapper<RequestDto, ResponseDto, Entity> {
+    RequestDto toDto(Entity entity);
+    Entity toEntity(RequestDto dto);
+    ResponseDto toResponseDto(Entity entity);
+    List<RequestDto> toDtoList(List<Entity> entityList);
+    List<ResponseDto> toResponseDtoList(List<Entity> entityList);
+    List<Entity> toEntityList(List<RequestDto> dtoList);
+    void updateEntityFromDto(RequestDto dto, @MappingTarget Entity entity);
 }
