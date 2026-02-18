@@ -5,13 +5,13 @@
         @for (item of quizData?.questions; track qIndex; let qIndex = $index) {
             <mat-card class="question-section">
                 <mat-card-header>
-                    <mat-card-subtitle>{{ qIndex+1 }}. {{item.question}}</mat-card-subtitle>
+                    <mat-card-subtitle>{{ qIndex+1 }}. {{item.text}}</mat-card-subtitle>
                 </mat-card-header>
     
                 <mat-card-content>
-                    <mat-radio-group aria-label="Select an option" class="radio-group" [(ngModel)]="userAnswers[qIndex]">
+                    <mat-radio-group aria-label="Select an option" class="radio-group" [required]="item.isRequired" [(ngModel)]="userAnswers[qIndex]">
                         @for (option of item.options; track oIndex; let oIndex = $index) {
-                            <mat-radio-button color="primary" [value]="oIndex">{{option}}</mat-radio-button>
+                            <mat-radio-button color="primary" [value]="{'questionId': item.questionId, 'selectedOptionId': option.id}">{{option.value}}</mat-radio-button>
                         }
                     </mat-radio-group>
                 </mat-card-content>

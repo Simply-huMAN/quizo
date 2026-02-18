@@ -42,9 +42,8 @@ export class CreateQuizComponent {
     this.quizService.createQuiz(this.topic()).subscribe({
       next: (response) => {
         console.log('Quiz created successfully:', response);
-        console.log(response);
 
-        const data = response as QuizResponse;
+        const data = response as QuizSchema;
         localStorage.setItem('quizData', JSON.stringify(data));
         this.router.navigate(['/quiz']);
         this.isLoading.set(false);

@@ -32,9 +32,9 @@ export class ResultComponent implements OnInit {
     }
     console.log('Loaded results:', this.quizData);
 
-    this.quizData?.questions.forEach((question, index) => {
-      if(question.answer == this.userAnswers[index]) this.score++;
-    })
+    // this.quizData?.questions.forEach((question, index) => {
+    //   if(question.answer == this.userAnswers[index]) this.score++;
+    // })
   }
   
   handleReviewAnswers() {

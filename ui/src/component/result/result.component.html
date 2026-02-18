@@ -8,21 +8,21 @@
     
     @if(showResults) {
         @for (item of quizData?.questions; track qIndex; let qIndex = $index) {
-            <mat-card class="result-section" [ngClass]="{'wrong-answer': showResults && userAnswers[qIndex] !== item.answer}">
+            <mat-card class="result-section">
                 <mat-card-header>
-                    <mat-card-subtitle>{{ qIndex+1 }}. {{item.question}}</mat-card-subtitle>
+                    <mat-card-subtitle>{{ qIndex+1 }}. {{item.text}}</mat-card-subtitle>
                 </mat-card-header>
     
                 <mat-card-content>
                     <mat-radio-group aria-label="Select an option" class="radio-group" disabled="true" [(ngModel)]="userAnswers[qIndex]">
                         @for (option of item.options; track oIndex; let oIndex = $index) {
-                            <mat-radio-button color="primary" [value]="oIndex" [ngClass]="{'correct-answer': item.answer === oIndex }">{{option}}</mat-radio-button>
+                            <mat-radio-button color="primary" [value]="oIndex">{{option.value}}</mat-radio-button>
                         }
                     </mat-radio-group>
                 </mat-card-content>
 
                 <mat-card-footer class="question-section-footer">
-                    <p>{{item.explanation}}</p>
+                    <p>{{item.isRequired}}</p>
                 </mat-card-footer>
             </mat-card> 
         }
