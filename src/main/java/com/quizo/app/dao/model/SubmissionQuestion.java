@@ -1,10 +1,7 @@
 package com.quizo.app.dao.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -26,6 +23,7 @@ public class SubmissionQuestion {
     @Schema(description = "Question to which the submission question belongs")
     private UUID questionId;
 
+    @Column(updatable = false)
     @JdbcTypeCode(SqlTypes.JSON)
     @Schema(description = "Options selected by the user for the question")
     private List<String> selectedOptionId;

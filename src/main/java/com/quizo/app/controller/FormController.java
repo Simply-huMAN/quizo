@@ -3,6 +3,7 @@ package com.quizo.app.controller;
 import com.quizo.app.dto.FormDTO;
 import com.quizo.app.dto.FormResponseDTO;
 import com.quizo.app.dto.SubmissionDTO;
+import com.quizo.app.response.Response;
 import com.quizo.app.service.FormService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class FormController {
     private final FormService formService;
 
@@ -36,8 +38,13 @@ public class FormController {
     }
 
     @PostMapping("/form/submit")
-    public ResponseEntity<String> submitForm(@RequestBody SubmissionDTO submissionDTO) {
+    public ResponseEntity<Response> submitForm(@RequestBody SubmissionDTO submissionDTO) {
         return ResponseEntity.ok(formService.submitForm(submissionDTO));
+    }
+
+    @GetMapping("/form/result")
+    public ResponseEntity<Response> getFormResults(@RequestParam UUID submissionId) {
+        return ResponseEntity.ok(formService.getFormResults(submissionId));
     }
 
 }

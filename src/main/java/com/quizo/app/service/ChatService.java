@@ -30,7 +30,7 @@ public class ChatService {
         return chatModel.call(prompt);
     }
 
-    public Object createForm(String topic) {
+    public FormDTO createForm(String topic) {
         FormDTO response = chatClient.prompt().user(topic).call().entity(FormDTO.class);
         return response;
     }

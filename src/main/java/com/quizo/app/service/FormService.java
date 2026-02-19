@@ -4,6 +4,7 @@ import com.quizo.app.dao.model.*;
 import com.quizo.app.dao.model.Question;
 import com.quizo.app.dao.repository.*;
 import com.quizo.app.dto.*;
+import com.quizo.app.response.Response;
 import com.quizo.app.utils.FormMapper;
 import com.quizo.app.utils.QuestionMapper;
 import com.quizo.app.utils.SubmissionMapper;
@@ -11,9 +12,12 @@ import com.quizo.app.utils.SubmissionQuestionMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
@@ -65,7 +69,7 @@ public class FormService {
         return formMapper.toResponseDto(form);
     }
 
-    public String submitForm(SubmissionDTO submissionDTO) {
+    public Response submitForm(SubmissionDTO submissionDTO) {
         // Save submission in SUBMISSION Table
         Submission submission = submissionMapper.toEntity(submissionDTO);
         var submissionResponse = submissionRepository.save(submission);
@@ -79,7 +83,61 @@ public class FormService {
             SubmissionQuestion submissionQuestion = submissionQuestionMapper.toEntity(submissionQuestionDTO);
             submissionQuestionRepository.save(submissionQuestion);
         });
-        return "Form submitted successfully, Submission ID: " + submissionResponse.getSubmissionId();
+        return Response.<String>builder()
+                .metadata(Metadata.builder().message("success").pagination(null).timestamp(Instant.now()).build())
+                .data(String.format("Form submitted successfully, Submission ID: %s",submissionResponse.getSubmissionId()))
+                .build();
+    }
+
+    public Response<Integer> getFormResults(UUID submissionId) {
+        // Check if score already evaluated for the submission
+        Submission submission = submissionRepository.getById(submissionId);
+        if(submission.getTotalScore() != null) {
+            return Response.<Integer>builder()
+                    .metadata(Metadata.builder().message("success").pagination(null).timestamp(Instant.now()).build())
+                    .data(submission.getTotalScore())
+                    .build();
+        }
+
+        // Calculate score and correct answers for the submission
+        // Get all questions for the submission, get all correct answers for the questions, compare and calculate score
+        UUID formId = submission.getFormId();
+        AtomicInteger score = new AtomicInteger(0);
+
+        // Fetch all questions for the form
+        List<Question> questions = questionRepository.findAllByFormId(formId);
+        questions.stream().map(question -> {
+            Solution solution = solutionRepository.findByQuestionId(question.getQuestionId());
+            SubmissionQuestion submissionQuestion = submissionQuestionRepository.findAllByQuestionIdAndSubmissionId(question.getQuestionId(), submissionId);
+            // Compare solution and submissionQuestion to calculate score for the question
+            int scoreObtained = 0;
+            if(solution.getCorrectOptionIds().equals(submissionQuestion.getSelectedOptionId())) {
+                scoreObtained += Integer.parseInt(question.getScore());
+                // Modify status of the submission to CORRECT
+                submissionQuestion.setIsCorrect(true);
+            }
+            else {
+                scoreObtained += Integer.parseInt(question.getNegativeScore());
+                submissionQuestion.setIsCorrect(false);
+            }
+            submissionQuestion.setScoreObtained(scoreObtained);
+            submissionQuestionRepository.save(submissionQuestion);
+            return scoreObtained;
+        }).filter(scoreObtained -> {
+            score.addAndGet(scoreObtained);
+            return true;
+        }).toList();
+        // Mark submission state to EVALUATED
+        submission.setTotalScore(score.get());
+        submission.setEvaluationStatus(Status.COMPLETED);
+        submission.setScoreEvaluatedAt(Instant.now());
+        submissionRepository.save(submission);
+
+        // Return score
+        return Response.<Integer>builder()
+                .metadata(Metadata.builder().message("success").pagination(null).timestamp(Instant.now()).build())
+                .data(score.get())
+                .build();
     }
 
 }
